@@ -16,8 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from api.views import ping
+from api.views import (
+    list_company_wallet,
+    list_bank_accounts,
+    list_project_wallet,
+    list_transactions,
+    list_transfer,
+)
 
 urlpatterns = [
-    path("api/ping/", ping),
+    path('admin/', admin.site.urls),
+    path("api/company-wallet/", list_company_wallet),
+    path("api/banks-accounts/", list_bank_accounts),
+    path("api/project-wallet/", list_project_wallet),
+    path("api/transactions/", list_transactions),
+    path("api/transfer/", list_transfer)
 ]
