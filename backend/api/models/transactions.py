@@ -70,3 +70,42 @@ class Transaction(models.Model):
         dest = f" -> {self.project.name}" if self.project else ""
         return f"[{self.transaction_type}] {self.bank_account.name} : {self.amount}{dest}"
 
+class Transfer(models.Model):
+    
+    from_account = models.ForeignKey(
+        BankAccount, related_name="transfer_out",
+        on_delete=models.CASCADE
+    )
+
+    to_account = models.ForeignKey(
+        BankAccount, related_name="transfer_in",
+        on_delete=models.CASCADE
+    )
+
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            return super().save(*args, **kwargs)
+        
+        with transaction.atomic():
+            src = BankAccount.objects.select_for_update().get(pk=self.from_account.pk)
+            dst = BankAccount.objects.select_for_update().get(pk=self.to_account.pk)
+
+            if self.amount <= 0:
+                raise ValidationError("Transfer amount must be positive.")
+
+            if src.balance < self.amount:
+                raise ValidationError(f"Insufficient funds in {src.name} to transfer {self.amount}.")
+            
+            src.balance -= self.amount
+            dst.balance += self.amount
+            
+            src.save()
+            dst.save()
+
+            super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.from_account.name} -> {self.to_account.name} : {self.amount}"
