@@ -48,3 +48,20 @@ class ProjectWallet(models.Model):
             return False, available_free_cash
         return True, available_free_cash
 
+class ProjectItem(models.Model):
+    project = models.ForeignKey(
+        ProjectWallet,
+        related_name="items",
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=200)
+    category = models.CharField(max_length=100)
+    quantity = models.IntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=15, decimal_places=2)
+
+    @property
+    def total_price(self):
+        return self.quantity * self.unit_price
+
+    def __str__(self):
+        return f"{self.name} ({self.quantity} x {self.unit_price})"
