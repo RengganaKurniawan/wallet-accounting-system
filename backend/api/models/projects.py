@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, F
+from django.core.exceptions import ValidationError
 from .wallets import BankAccount
 
 class ProjectWallet(models.Model):
@@ -62,6 +63,23 @@ class ProjectItem(models.Model):
     @property
     def total_price(self):
         return self.quantity * self.unit_price
+
+    def save(self, *args, **kwargs):
+        this_item_cost = self.total_price
+
+        other_items_cost = self.project.items.exclude(pk=self.pk).aggregate(
+            total=Sum(F('quantity') * F('unit_price'))
+        )['total'] or 0
+
+        total_planned_cost = other_items_cost + this_item_cost
+
+        if total_planned_cost > self.project.allocated_budget:
+            remaining = self.project.allocated_budget - other_items_cost
+            raise ValidationError(
+                f"Budget Exceeded! This item cost {this_item_cost:,.2f}, but you only have {remaining:,.2f} remaining in the Project Budget." 
+            )
+        
+        super().save(*args,  **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.quantity} x {self.unit_price})"
