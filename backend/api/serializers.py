@@ -16,14 +16,35 @@ class ProjectItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectItem
-        fields = ['id', 'name', 'category', 'quantity', 'unit_price', 'total_price']
+        fields = [
+            'id', 'category', 'name', 'description',
+            'qty_amount', 'qty_unit',
+            'volume_amount', 'volume_unit',
+            'period_amount', 'period_unit',
+            'unit_price', 'total_price'
+        ]
 
 class ProjectWalletSerializer(serializers.ModelSerializer):
     items = ProjectItemSerializer(many=True, read_only=True)
 
+    category_totals = serializers.SerializerMethodField()
+    grand_total = serializers.SerializerMethodField()
+
     class Meta:
         model = ProjectWallet
         fields = "__all__"
+    
+    def get_grand_total(self, obj):
+        return sum(item.total_price for item in obj.items.all())
+    
+    def get_category_totals(self, obj):
+        totals = {}
+        for item in obj.items.all():
+            cat = item.category
+            if cat not in totals:
+                totals[cat] = 0
+            totals[cat] += item.total_price
+        return totals
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
