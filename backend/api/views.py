@@ -1,50 +1,41 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
+from rest_framework import viewsets
 from .models import (
     BankAccount,
     CompanyWallet,
     ProjectWallet,
+    ProjectItem,
     Transaction,
     Transfer
 )
-
 from .serializers import (
     CompanyWalletSerializer,
     BankAccountSerializer,
     ProjectWalletSerializer,
+    ProjectItemSerializer,
     TransactionSerializer,
     TransferSerializer,
 )
 
-@api_view(['GET'])
-def list_company_wallet(request):
-    wallets = CompanyWallet.objects.all()
-    serializer = CompanyWalletSerializer(wallets, many=True)
-    return Response(serializer.data)
+class CompanyWalletViewSet(viewsets.ModelViewSet):
+    queryset = CompanyWallet.objects.all()
+    serializer_class = CompanyWalletSerializer
 
-@api_view(['GET'])
-def list_bank_accounts(request):
-    accounts = BankAccount.objects.all()
-    serializer = BankAccountSerializer(accounts, many=True)
-    return Response(serializer.data)
+class BankAccountViewSet(viewsets.ModelViewSet):
+    queryset = BankAccount.objects.all()
+    serializer_class = BankAccountSerializer
 
-@api_view(['GET'])
-def list_project_wallet(request):
-    projects = ProjectWallet.objects.all()
-    serializer = ProjectWalletSerializer(projects, many=True)
-    return Response(serializer.data)
+class ProjectWalletViewSet(viewsets.ModelViewSet):
+    queryset = ProjectWallet.objects.all()
+    serializer_class = ProjectWalletSerializer
 
-@api_view(['GET'])
-def list_transactions(request):
-    transactions = Transaction.objects.all()
-    serializer = TransactionSerializer(transactions, many=True)
-    return Response(serializer.data)
+class ProjectItemViewSet(viewsets.ModelViewSet):
+    queryset = ProjectItem.objects.all()
+    serializer_class = ProjectItemSerializer
 
-@api_view(['GET'])
-def list_transfer(request):
-    transfers = Transfer.objects.all()
-    serializer = TransferSerializer(transfers, many=True)
-    return Response(serializer.data)
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
 
+class TransferViewSet(viewsets.ModelViewSet):
+    queryset = Transfer.objects.all()
+    serializer_class = TransferSerializer
