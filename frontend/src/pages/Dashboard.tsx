@@ -116,7 +116,43 @@ const Dashboard = () => {
             </div>
 
             {/* --- ACTIVE PROJECTS TABLE --- */}
+            <div className="bg-white rounded-xl shadow-sm border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-800">Active Projects</h3>
+                    <button className="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
+                        View All <ArrowRight size={16}/>
+                    </button>
+                </div>
 
+                <table className="w-full text-left text-sm text-gray-600">
+                    <thead className="bg-gray-50 text-gray-700 font-medium">
+                        <tr>
+                            <th className="px-6 py-3">Project Name</th>
+                            <th className="px-6 py-3">Client</th>
+                            <th className="px-6 py-3 text-right">Allocated Budget</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {activeProjects.length === 0 ? (
+                            <tr>
+                                <td colSpan={3} className="px-6 py-8 text-center text-gray-400">
+                                    No active projects currently running.
+                                </td>
+                            </tr>
+                        ) : (
+                            activeProjects.map((project) => (
+                                <tr key={project.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4 font-medium text-gray-900">{project.name}</td>
+                                    <td className="px-6 py-4">{project.client_name}</td>
+                                    <td className="px-6 py-4 text-right font-medium text-orange-600">
+                                        {formatIDR(parseFloat(project.allocated_budget))}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };
