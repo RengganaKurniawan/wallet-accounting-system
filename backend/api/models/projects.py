@@ -34,20 +34,42 @@ class ProjectWallet(models.Model):
         return self.allocated_budget - self.total_spent
     
     @classmethod
-    def check_funds_availability(cls, new_rab_amount):
+    def check_funds_availability(cls, new_rab_amount, exclude_id=None):
         """
         Global check:
         Total Cash in Banks - Total Allocated to Active Projects
         """
+        # all money in banks
         total_assets = BankAccount.objects.aggregate(Sum('balance'))['balance__sum'] or 0
 
-        locked_funds = cls.objects.filter(status="ACTIVE").aggregate(Sum('allocated_budget'))['allocated_budget__sum'] or 0
+        # count money locked in project
+        query = cls.objects.filter(status="ACTIVE")
 
+        # if editing a project fund
+        if exclude_id:
+            query = query.exclude(pk=exclude_id)
+
+        locked_funds = query.aggregate(Sum('allocated_budget'))['allocated_budget__sum'] or 0
+
+        # calculate free funds to use
         available_free_cash = total_assets - locked_funds
 
         if new_rab_amount > available_free_cash:
             return False, available_free_cash
         return True, available_free_cash
+    
+    def save(self, *args, **kwargs):
+        if self.status == "ACTIVE":
+            is_safe, free_cash = self.check_funds_availability(self.allocated_budget, exclude_id=self.pk)
+
+            if not is_safe:
+                raise ValidationError(
+                    f"Insufficient Company Funds! You are trying to allocate {self.allocated_budget:,.2f}, "
+                    f"but the company only has {free_cash:,.2f} in available (unlocked) cash."
+                )
+        
+        super().save(*args, **kwargs)
+
 
 class ProjectItem(models.Model):
     project = models.ForeignKey(
