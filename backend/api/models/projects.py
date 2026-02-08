@@ -25,7 +25,7 @@ class ProjectWallet(models.Model):
     def total_spent(self):
         """Calculates total expenses for this project from Transactions"""
         from .transactions import Transaction
-        spent = Transaction.objects.filter(project=self, type="OUT").aggregate(Sum('amount'))['amount__sum']
+        spent = Transaction.objects.filter(project=self, transaction_type="OUT").aggregate(Sum('amount'))['amount__sum']
         return spent or 0
     
     @property
@@ -79,6 +79,7 @@ class ProjectItem(models.Model):
     )
     # basic info
     category = models.CharField(max_length=100)
+    sub_category = models.CharField(max_length=100, blank=True, null=True)
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     
