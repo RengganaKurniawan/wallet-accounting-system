@@ -25,7 +25,7 @@ class ProjectItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectItem
         fields = [
-            'id', 'category', 'sub_category' 'name', 'description',
+            'id', 'category', 'sub_category', 'name', 'description',
             'qty_amount', 'qty_unit',
             'volume_amount', 'volume_unit',
             'period_amount', 'period_unit',
