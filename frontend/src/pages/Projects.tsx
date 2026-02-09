@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import api from '../api';
 import { 
@@ -140,9 +140,15 @@ const Projects = () => {
                                     </div>
 
                                     <h3 className="text-lg font-bold text-gray-900 mb-1">{project.name}</h3>
-                                    <p className="text-sm text-gray-500 mb-6 flex items-center gap-1">
-                                        <span className="font-medium text-gray-700">{project.client_name}</span>
-                                    </p>
+
+                                    <div className="flex flex-col gap-1 mb-6">
+                                        <p className="text-sm font-medium text-gray-700">{project.client_name}</p>
+                                    
+                                        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                                            <Calendar size={14} />
+                                            <span>{new Date(project.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                        </div>
+                                    </div>
 
                                     <div className="mt-auto space-y-4">
                                         <div className="space-y-1">
