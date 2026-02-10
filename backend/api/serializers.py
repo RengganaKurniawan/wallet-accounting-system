@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CompanyWallet, BankAccount, ProjectWallet, Transaction, Transfer, ProjectItem
 from django.db.models import Sum
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 class CompanyWalletSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,6 +62,12 @@ class ProjectWalletSerializer(serializers.ModelSerializer):
                 totals[cat] = 0
             totals[cat] += item.total_price
         return totals
+    
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError({"detail": e.messages})
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
