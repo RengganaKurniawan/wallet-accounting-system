@@ -27,7 +27,7 @@ class ProjectItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectItem
         fields = [
-            'id', 'category', 'sub_category', 'name', 'description',
+            'id', 'project', 'category', 'sub_category', 'name', 'description',
             'qty_amount', 'qty_unit',
             'volume_amount', 'volume_unit',
             'period_amount', 'period_unit',
@@ -43,6 +43,12 @@ class ProjectItemSerializer(serializers.ModelSerializer):
     def get_margin(self, obj):
         real_spent = self.get_realized_spend(obj)
         return obj.total_price - real_spent
+    
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.messages)
 
 class ProjectWalletSerializer(serializers.ModelSerializer):
     items = ProjectItemSerializer(many=True, read_only=True)
