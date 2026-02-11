@@ -21,6 +21,7 @@ class SimpleTransactionSerializer(serializers.ModelSerializer):
 class ProjectItemSerializer(serializers.ModelSerializer):
     total_price = serializers.ReadOnlyField() # for Plan RAB
     realized_spend = serializers.SerializerMethodField() # actual expenses
+    margin = serializers.SerializerMethodField()
     history = SimpleTransactionSerializer(source='related_transactions', many=True, read_only=True)
     
     class Meta:
@@ -31,12 +32,17 @@ class ProjectItemSerializer(serializers.ModelSerializer):
             'volume_amount', 'volume_unit',
             'period_amount', 'period_unit',
             'unit_price', 'total_price',
-            'realized_spend', 'history'
+            'realized_spend', 'history',
+            'margin'
         ]
     
     def get_realized_spend(self, obj):
         spent = obj.related_transactions.filter(transaction_type="OUT").aggregate(Sum('amount'))['amount__sum']
         return spent or 0
+    
+    def get_margin(self, obj):
+        real_spent = self.get_realized_spend(obj)
+        return obj.total_price - real_spent
 
 class ProjectWalletSerializer(serializers.ModelSerializer):
     items = ProjectItemSerializer(many=True, read_only=True)
