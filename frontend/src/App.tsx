@@ -5,6 +5,7 @@ import Projects from "./pages/Projects"
 import ProjectCreate from "./pages/ProjectCreate";
 import ProjectDetail from "./pages/ProjectDetail";
 import ProjectItemCreate from "./pages/ProjectItemCreate";
+import Wallets from "./pages/Wallets";
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
           <Route path="projects/:id/add-item" element={<ProjectItemCreate />} />
 
           
-          <Route path="wallets" element={<div className="p-4">Wallets Page (Coming Soon)</div>} />
+          <Route path="wallets" element={<Wallets />} />
         
         </Route>
       </Routes>
