@@ -6,6 +6,7 @@ import ProjectCreate from "./pages/ProjectCreate";
 import ProjectDetail from "./pages/ProjectDetail";
 import ProjectItemCreate from "./pages/ProjectItemCreate";
 import Wallets from "./pages/Wallets";
+import Transactions from "./pages/Transactions";
 
 function App() {
   return (
@@ -14,13 +15,15 @@ function App() {
         <Route path="/" element={<MainLayout />}>
 
           <Route index element={<Dashboard />} />
+
           <Route path="projects" element={<Projects />} />
           <Route path="projects/new" element={<ProjectCreate />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
           <Route path="projects/:id/add-item" element={<ProjectItemCreate />} />
-
           
           <Route path="wallets" element={<Wallets />} />
+
+          <Route path="transactions" element={<Transactions />}/>
         
         </Route>
       </Routes>
