@@ -4,12 +4,9 @@ import api from '../api';
 import { 
   ArrowLeft, 
   Plus, 
-  Wallet, 
   Receipt, 
   PieChart, 
   AlertTriangle,
-  CheckCircle,
-  Clock
 } from 'lucide-react';
 
 interface RABItem {
