@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from .models import (
     BankAccount,
     CompanyWallet,
@@ -32,8 +32,13 @@ class ProjectItemViewSet(viewsets.ModelViewSet):
     queryset = ProjectItem.objects.all()
     serializer_class = ProjectItemSerializer
 
-class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
+class TransactionViewSet(mixins.CreateModelMixin,
+                         mixins.ListModelMixin,
+                         mixins.RetrieveModelMixin,
+                         mixins.DestroyModelMixin,
+                         viewsets.GenericViewSet):
+    
+    queryset = Transaction.objects.all().order_by('-date', '-id')
     serializer_class = TransactionSerializer
 
 class TransferViewSet(viewsets.ModelViewSet):

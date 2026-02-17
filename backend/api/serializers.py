@@ -82,9 +82,23 @@ class ProjectWalletSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"detail": e.messages})
 
 class TransactionSerializer(serializers.ModelSerializer):
+    wallet_name = serializers.ReadOnlyField(source='account.name')
+    project_name = serializers.ReadOnlyField(source='project.name')
     class Meta:
         model = Transaction
         fields = "__all__"
+
+    def validate(self, data):
+        if data['transaction_type'] == 'OUT':
+            wallet = data['account']
+            amount = data['amount']
+
+            if wallet.balance < amount:
+                raise serializers.ValidationError(
+                    f"Insufficient funds! {wallet.name} only has Rp {wallet.balance:,.0f}"
+                )
+        
+        return data
 
 class TransferSerializer(serializers.ModelSerializer):
     class Meta:

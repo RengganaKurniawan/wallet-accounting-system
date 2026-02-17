@@ -53,16 +53,13 @@ class Transaction(models.Model):
         with transaction.atomic():
             account_obj = BankAccount.objects.select_for_update().get(pk=self.account.pk)
 
-            project = None
+            project_obj = None
             if self.project:
                 project_obj = ProjectWallet.objects.select_for_update().get(pk=self.project.pk)
             
             # validations
             if self.amount <= 0:
                 raise ValidationError("Transaction amount must be positive.")
-
-            if self.transaction_type == "OUT" and not self.project:
-                raise ValidationError("Expense transactions must belong to a project.")
 
             if self.transaction_type == "OUT":
                 if account_obj.balance < self.amount:
