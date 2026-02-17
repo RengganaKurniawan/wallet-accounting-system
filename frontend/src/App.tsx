@@ -7,6 +7,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import ProjectItemCreate from "./pages/ProjectItemCreate";
 import Wallets from "./pages/Wallets";
 import Transactions from "./pages/Transactions";
+import TransactionCreate from "./pages/TransactionCreate";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="wallets" element={<Wallets />} />
 
           <Route path="transactions" element={<Transactions />}/>
+          <Route path="transactions/new" element={<TransactionCreate />}/>
         
         </Route>
       </Routes>
