@@ -52,7 +52,10 @@ const TransactionCreate = () => {
         const fetchItems = async () => {
             try {
                 const res = await api.get(`/projects/${formData.project}/`);
-                setProjectItems(res.data.items || []);
+
+                const allItems = res.data.items || [];
+                const availableItems = allItems.filter((item: any) => item.realized_spend === 0)
+                setProjectItems(availableItems);
             } catch (err) {
                 console.error("Failed to load items", err);
             }
