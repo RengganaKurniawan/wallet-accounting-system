@@ -6,7 +6,8 @@ import {
   ArrowDownLeft, 
   Plus, 
   Search, 
-  Filter 
+  Filter,
+  Wallet
 } from 'lucide-react';
 
 interface Transaction {
@@ -16,6 +17,9 @@ interface Transaction {
     transaction_type: 'IN' | 'OUT';
     description: string;
     account: number;
+
+    wallet_name: string;
+    project_name: string | null;
     project_item: number | null;
 }
 
@@ -89,30 +93,51 @@ const Transactions = () => {
                     <thead className="bg-gray-50 text-gray-700 font-semibold uppercase text-xs">
                         <tr>
                             <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Description</th>
+                            <th className="px-6 py-4">Wallet</th>
+                            <th className="px-6 py-4">Context</th> 
                             <th className="px-6 py-4 text-center">Type</th>
                             <th className="px-6 py-4 text-right">Amount</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                         {loading ? (
-                            <tr><td colSpan={4} className="px-6 py-8 text-center">Loading...</td></tr>
+                            <tr><td colSpan={6} className="px-6 py-8 text-center">Loading...</td></tr>
                         ) : transactions.length === 0 ? (
-                            <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400">No transactions found.</td></tr>
+                            <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No transactions found.</td></tr>
                         ) : (
                             transactions.map((tx) => (
                                 <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
+                                    
+                                    {/* date */}
                                     <td className="px-6 py-4 whitespace-nowrap font-mono text-gray-500">
                                         {formatDate(tx.date)}
                                     </td>
+
+                                    {/* WALLET (NEW) */}
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2 text-gray-700 font-medium">
+                                            <Wallet size={16} className="text-gray-400" />
+                                            {tx.wallet_name}
+                                        </div>
+                                    </td>
+
+                                    {/* CONTEXT (Project vs General) */}
                                     <td className="px-6 py-4">
                                         <div className="font-medium text-gray-900">{tx.description}</div>
-                                        {tx.project_item && (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 mt-1">
-                                            Linked to Project
-                                        </span>
+                                        
+                                        {/* Logic: If Project exists, show it. Else show General Expenses */}
+                                        {tx.project_name ? (
+                                            <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                                                Project: {tx.project_name}
+                                            </div>
+                                        ) : (
+                                            <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200">
+                                                General Expenses
+                                            </div>
                                         )}
                                     </td>
+
+                                    {/* type */}
                                     <td className="px-6 py-4 text-center">
                                         {tx.transaction_type === 'IN' ? (
                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
@@ -124,9 +149,13 @@ const Transactions = () => {
                                         </span>
                                         )}
                                     </td>
+
+                                    {/* amount */}
                                     <td className={`px-6 py-4 text-right font-bold font-mono ${tx.transaction_type === 'IN' ? 'text-emerald-600' : 'text-gray-900'}`}>
                                         {tx.transaction_type === 'IN' ? '+' : '-'}{formatIDR(parseFloat(tx.amount))}
                                     </td>
+
+
                                 </tr>
                             ))
                         )}

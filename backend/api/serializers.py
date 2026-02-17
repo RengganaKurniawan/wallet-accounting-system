@@ -82,6 +82,8 @@ class ProjectWalletSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"detail": e.messages})
 
 class TransactionSerializer(serializers.ModelSerializer):
+    wallet_name = serializers.ReadOnlyField(source='account.name')
+    project_name = serializers.ReadOnlyField(source='project.name')
     class Meta:
         model = Transaction
         fields = "__all__"
